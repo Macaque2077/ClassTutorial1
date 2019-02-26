@@ -108,5 +108,9 @@ namespace Version_1_C
             UpdateDisplay();
         }
 
+        private void txtName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
