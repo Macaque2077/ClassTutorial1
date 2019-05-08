@@ -1,3 +1,4 @@
+using Gallery3WinForm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +7,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Version_1_C
+namespace Gallery3WinForm
 {
     public sealed partial class frmMain : Form
     {
@@ -25,43 +26,49 @@ namespace Version_1_C
         /// </summary>
 
 
-        //private clsArtistList _ArtistList = new clsArtistList(); Q6
-        private clsArtistList _ArtistList; //Q6
+       
+        //private clsArtistList _ArtistList; Task 3
 
-        private string error;
+        //private string error;
         private void frmMain_Load(object sender, EventArgs e)
         {
 
-            _ArtistList = clsArtistList.Retrieve();
+            //_ArtistList = clsArtistList.Retrieve(); Task 3
             updateDisplay();
 
-            error = clsArtistList._errorMessage;
-
-            if (error != ""){
-                MessageBox.Show("File Retrieve Error");
-            }
+            //error = clsArtistList._errorMessage; Task 3
+            //Task 3
+            //if (error != ""){                       
+            //    MessageBox.Show("File Retrieve Error");       
+            //}
         }
 
 
-        public void updateDisplay()
+        public async void updateDisplay()
         {
-            lstArtists.DataSource = null;
-            string[] lcDisplayList = new string[_ArtistList.Count];
+            try
+            {
+                lstArtists.DataSource = null;
+                lstArtists.DataSource = await ServiceClient.GetArtistNamesAsync();
+            }
+            catch { }
 
-            
-            _ArtistList.Keys.CopyTo(lcDisplayList, 0);
-            lstArtists.DataSource = lcDisplayList;
-            lblValue.Text = Convert.ToString(_ArtistList.getTotalValue());
-        }
+
+            //lstArtists.DataSource = null;
+            //string[] lcDisplayList = new string[_ArtistList.Count];
+
+
+            //_ArtistList.Keys.CopyTo(lcDisplayList, 0);
+            //lstArtists.DataSource = lcDisplayList;
+            //lblValue.Text = Convert.ToString(_ArtistList.getTotalValue());
+            }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
             try
             {
-                frmArtist.Run(new clsArtist(_ArtistList));
-                //_ArtistList.newArtist();
-                //MessageBox.Show("Artist added!"); //q2 p7d
-                //updateDisplay();
+                //frmArtist.Run(new clsArtist(_ArtistList));
+
             }
             catch (Exception)
             {
@@ -79,9 +86,8 @@ namespace Version_1_C
             if (lcKey != null)                       
                 try
                 {
-                    frmArtist.Run(_ArtistList[lcKey]);// test
-                    //_ArtistList.editArtist(lcKey); //q2 p7 test
-                    //updateDisplay();  // q2 p7 tets
+                    frmArtist.Run(lstArtists.SelectedItem as string);
+
                 }
             
                 catch (Exception ex)
@@ -93,28 +99,21 @@ namespace Version_1_C
 
         private void btnQuit_Click(object sender, EventArgs e)
         {
-            _ArtistList.Save();
 
-            error = clsArtistList._errorMessage;
-
-            if (error != "")
-            {
-                MessageBox.Show(error, "File Save Error");
-            }
             Close();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            string lcKey;
+            //string lcKey;
 
-            lcKey = Convert.ToString(lstArtists.SelectedItem);
-            if (lcKey != null)
-            {
-                lstArtists.ClearSelected();
-                _ArtistList.Remove(lcKey);
-                updateDisplay();
-            }
+            //lcKey = Convert.ToString(lstArtists.SelectedItem);
+            //if (lcKey != null)
+            //{
+            //    lstArtists.ClearSelected();
+            //    _ArtistList.Remove(lcKey);
+            //    updateDisplay();
+            //}
         }
 
 

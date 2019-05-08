@@ -7,21 +7,27 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace Version_1_C
+namespace Gallery3WinForm
 {
     public partial class frmArtist : Form
     {
         //p2 task 7
-        private static Dictionary<clsArtist, frmArtist> _ArtistFormList = new Dictionary<clsArtist, frmArtist>();
+        private static Dictionary<string, frmArtist> _ArtistFormList = new Dictionary<string, frmArtist>();
 
-        public static void Run(clsArtist prArtist)
+        public static void Run(string prArtistName)
         {
             frmArtist lcArtistForm;
-            if (!_ArtistFormList.TryGetValue(prArtist, out lcArtistForm))
+            if (string.IsNullOrEmpty(prArtistName) ||
+            !_ArtistFormList.TryGetValue(prArtistName, out lcArtistForm))
             {
                 lcArtistForm = new frmArtist();
-                _ArtistFormList.Add(prArtist, lcArtistForm);
-                lcArtistForm.SetDetails(prArtist);
+                if (string.IsNullOrEmpty(prArtistName))
+                    lcArtistForm.SetDetails(new clsArtist());
+                else
+                {
+                    _ArtistFormList.Add(prArtistName, lcArtistForm);
+                    lcArtistForm.refreshFormFromDB(prArtistName);
+                }
             }
             else
             {
@@ -29,37 +35,42 @@ namespace Version_1_C
                 lcArtistForm.Activate();
             }
         }
-    
+
+        private async void refreshFormFromDB(string prArtistName)
+        {
+            SetDetails(await ServiceClient.GetArtistAsync(prArtistName));
+        }
+
+
         //p2 task 7
         //
         public frmArtist()
         {
             InitializeComponent();
         }
-        //public static readonly frmArtist Instance = new frmArtist(); //P2
 
-        //private clsArtistList _ArtistList; Q9
-        private clsWorksList _WorksList;
+        
+        //private clsWorksList _WorksList;
         private byte _SortOrder; // 0 = Name, 1 = Date
 
         private void UpdateDisplay()
         {
-            //txtName.Enabled = txtName.Text == "";
-            if (_SortOrder == 0)
-            {
-                _WorksList.SortByName();
-                rbByName.Checked = true;
-            }
-            else
-            {
-                _WorksList.SortByDate();
-                rbByDate.Checked = true;
-            }
+            ////txtName.Enabled = txtName.Text == "";
+            //if (_SortOrder == 0)
+            //{
+            //    //_WorksList.SortByName();
+            //    rbByName.Checked = true;
+            //}
+            //else
+            //{
+            //    //_WorksList.SortByDate();
+            //    rbByDate.Checked = true;
+            //}
 
-            lstWorks.DataSource = null;
-            lstWorks.DataSource = _WorksList;
-            lblTotal.Text = Convert.ToString(_WorksList.GetTotalValue());
-            frmMain.Instance.updateDisplay();
+            //lstWorks.DataSource = null;
+            ////lstWorks.DataSource = _WorksList;
+            ////lblTotal.Text = Convert.ToString(_WorksList.GetTotalValue());
+            //frmMain.Instance.updateDisplay();
         }
 
         public void SetDetails(clsArtist prArtist)
@@ -75,33 +86,26 @@ namespace Version_1_C
 
         }
 
-        //Q8
-        //public void GetDetails(ref string prName, ref string prSpeciality, ref string prPhone)
-        //{
-        //    prName = txtName.Text;
-        //    prSpeciality = txtSpeciality.Text;
-        //    prPhone = txtPhone.Text;
-        //    _SortOrder = _WorksList.SortOrder;
-        //}
+
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
             //_WorksList.DeleteWork(lstWorks.SelectedIndex);
 
-            if (lstWorks.SelectedIndex >= 0 && lstWorks.SelectedIndex < _WorksList.Count)
-            {
-                if (MessageBox.Show("Are you sure?", "Deleting work", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    _WorksList.DeleteWork(lstWorks.SelectedIndex);
-                }
-            }
+            //if (lstWorks.SelectedIndex >= 0 && lstWorks.SelectedIndex < _WorksList.Count)
+            //{
+            //    if (MessageBox.Show("Are you sure?", "Deleting work", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            //    {
+            //        //_WorksList.DeleteWork(lstWorks.SelectedIndex);
+            //    }
+            //}
             UpdateDisplay();
             frmMain.Instance.updateDisplay();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            _WorksList.AddWork();
+            //_WorksList.AddWork();
             UpdateDisplay();
             frmMain.Instance.updateDisplay();
         }
@@ -115,7 +119,7 @@ namespace Version_1_C
                     pushData();
                     if (txtName.Enabled)
                     {
-                        _Artist.newArtist();
+                        //_Artist.newArtist();
                         MessageBox.Show("Artist added!", "Success");
                         frmMain.Instance.updateDisplay();
                         txtName.Enabled = false;
@@ -127,47 +131,40 @@ namespace Version_1_C
                     MessageBox.Show(ex.Message);
                 }
 
-            //q2 p7
-            //if (isValid())
-            //{
-            //    pushData();
-            //    Hide();
-            //    //DialogResult = DialogResult.OK; p2 q7
-            //}
+
         }
 
         public virtual Boolean isValid()
         {
-            if (txtName.Enabled && txtName.Text != "")
-            {
+            //if (txtName.Enabled && txtName.Text != "")
+            //{
                 
-                if (_Artist.IsDuplicate(txtName.Text)) // Q9 _ArtistList.ContainsKey(txtName.Text)
-                {
-                    MessageBox.Show("Artist with that name already exists!");
-                    return false;
-                }
-                else
-                    return true;
-            }
-            else
+            //    if (_Artist.IsDuplicate(txtName.Text)) // Q9 _ArtistList.ContainsKey(txtName.Text)
+            //    {
+            //        MessageBox.Show("Artist with that name already exists!");
+            //        return false;
+            //    }
+            //    else
+            //        return true;
+            //}
+            //else
                 return true;
         }
 
         private void lstWorks_DoubleClick(object sender, EventArgs e)
         {
             int lcIndex = lstWorks.SelectedIndex;
-            //if (lcIndex >= 0)
+
+            //if (lcIndex >= 0 && lcIndex < _WorksList.Count)
             //{
-            if (lcIndex >= 0 && lcIndex < _WorksList.Count)
-            {
-                _WorksList.EditWork(lcIndex);
-            }
-            else
-            {
-                MessageBox.Show("Sorry no work selected #" + Convert.ToString(lcIndex));
-            }
-                UpdateDisplay();
+            //    _WorksList.EditWork(lcIndex);
             //}
+            //else
+            //{
+            //    MessageBox.Show("Sorry no work selected #" + Convert.ToString(lcIndex));
+            //}
+                UpdateDisplay();
+
         }
 
         private void rbByDate_CheckedChanged(object sender, EventArgs e)
@@ -188,9 +185,9 @@ namespace Version_1_C
             txtName.Text = _Artist.Name;
             txtSpeciality.Text = _Artist.Speciality;
             txtPhone.Text = _Artist.Phone;
-            //_ArtistList = _Artist.ArtistList; //Q9
-            _WorksList = _Artist.WorksList;
-            _SortOrder = _WorksList.SortOrder;
+
+            //_WorksList = _Artist.WorksList;
+            //_SortOrder = _WorksList.SortOrder;
             UpdateDisplay();
         }
         //Q8
@@ -199,12 +196,7 @@ namespace Version_1_C
             _Artist.Name = txtName.Text;
             _Artist.Speciality = txtSpeciality.Text;
             _Artist.Phone = txtPhone.Text;
-            _SortOrder = _WorksList.SortOrder;
-
-        }
-
-        private void frmArtist_Load(object sender, EventArgs e)
-        {
+            //_SortOrder = _WorksList.SortOrder;
 
         }
     }

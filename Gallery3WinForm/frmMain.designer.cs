@@ -1,4 +1,4 @@
-namespace Version_1_C
+namespace Gallery3WinForm
 {
     partial class frmMain
     {

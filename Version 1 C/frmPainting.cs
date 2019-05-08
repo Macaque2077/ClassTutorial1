@@ -8,31 +8,64 @@ using System.Windows.Forms;
 
 namespace Version_1_C
 {
-    public partial class frmPainting : Version_1_C.frmWork
+    public sealed partial class frmPainting : Version_1_C.frmWork //the sealed here is p2
     {
+        //p2
 
-        public frmPainting()
+        public  static frmPainting Instance { get { return frmPainting.instance; } }
+
+        private static readonly frmPainting instance = new frmPainting();
+
+//p2 4
+        public static void Run(clsPainting prPainting)
+        {
+            Instance.SetDetails(prPainting);
+        }
+        private frmPainting()
         {
             InitializeComponent();
         }
-
-        public virtual void SetDetails(string prName, DateTime prDate, decimal prValue,
-                                       float prWidth, float prHeight, string prType)
+        //p2
+        //public frmPainting()
+        //{
+        //    InitializeComponent();
+        //}
+        protected override void updateForm()
         {
-            base.SetDetails(prName, prDate, prValue);
-            txtWidth.Text = Convert.ToString(prWidth);
-            txtHeight.Text = Convert.ToString(prHeight);
-            txtType.Text = prType;
+            base.updateForm();
+            clsPainting lcWork = (clsPainting)_Work;
+            txtWidth.Text = lcWork.Width.ToString();
+            txtHeight.Text = lcWork.Height.ToString();
+            txtType.Text = lcWork.Type;
         }
 
-        public virtual void GetDetails(ref string prName, ref DateTime prDate, ref decimal prValue,
-                                       ref float prWidth, ref float prHeight, ref string prType)
+        protected override void pushData()
         {
-            base.GetDetails(ref prName, ref prDate, ref prValue);
-            prWidth = Convert.ToSingle(txtWidth.Text);
-            prHeight = Convert.ToSingle(txtHeight.Text);
-            prType = txtType.Text;
+            base.pushData();
+            clsPainting lcWork = (clsPainting)_Work;
+            lcWork.Width = Single.Parse(txtWidth.Text);
+            lcWork.Height = Single.Parse(txtHeight.Text);
+            lcWork.Type = txtType.Text;
         }
+
+        //Q10 not p2
+        //public virtual void SetDetails(string prName, DateTime prDate, decimal prValue,
+        //                               float prWidth, float prHeight, string prType)
+        //{
+        //    base.SetDetails(prName, prDate, prValue);
+        //    txtWidth.Text = Convert.ToString(prWidth);
+        //    txtHeight.Text = Convert.ToString(prHeight);
+        //    txtType.Text = prType;
+        //}
+        //Q10 not p2
+        //public virtual void GetDetails(ref string prName, ref DateTime prDate, ref decimal prValue,
+        //                               ref float prWidth, ref float prHeight, ref string prType)
+        //{
+        //    base.GetDetails(ref prName, ref prDate, ref prValue);
+        //    prWidth = Convert.ToSingle(txtWidth.Text);
+        //    prHeight = Convert.ToSingle(txtHeight.Text);
+        //    prType = txtType.Text;
+        //}
     }
 }
 
